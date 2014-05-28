@@ -1,0 +1,254 @@
+package physics.tools;
+
+import java.io.Serializable;
+
+/**
+ * A 2D column vector
+ */
+public class Vec implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	public float x, y;
+
+	public Vec() {
+		this(0, 0);
+	}
+
+	public Vec(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public Vec( Vec toCopy) {
+		this(toCopy.x, toCopy.y);
+	}
+
+	/** Zero out this vector. */
+	public final void setZero() {
+		x = 0.0f;
+		y = 0.0f;
+	}
+
+	/** Set the vector component-wise. */
+	public final Vec set(float x, float y) {
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+
+	/** Set this vector to another vector. */
+	public final Vec set(Vec v) {
+		this.x = v.x;
+		this.y = v.y;
+		return this;
+	}
+
+	/** Return the sum of this vector and another; does not alter either one. */
+	public final Vec add(Vec v) {
+		return new Vec(x + v.x, y + v.y);
+	}
+	
+	
+
+	/** Return the difference of this vector and another; does not alter either one. */
+	public final Vec sub(Vec v) {
+		return new Vec(x - v.x, y - v.y);
+	}
+
+	/** Return this vector multiplied by a scalar; does not alter this vector. */
+	public final Vec mul(float a) {
+		return new Vec(x * a, y * a);
+	}
+
+	/** Return the negation of this vector; does not alter this vector. */
+	public final Vec negate() {
+		return new Vec(-x, -y);
+	}
+
+	/** Flip the vector and return it - alters this vector. */
+	public final Vec negateLocal() {
+		x = -x;
+		y = -y;
+		return this;
+	}
+
+	/** Add another vector to this one and returns result - alters this vector. */
+	public final Vec addLocal(Vec v) {
+		x += v.x;
+		y += v.y;
+		return this;
+	}
+	
+	/** Adds values to this vector and returns result - alters this vector. */
+	public final Vec addLocal( float x, float y) {
+		this.x+=x;
+		this.y+=y;
+		return this;
+	}
+
+	/** Subtract another vector from this one and return result - alters this vector. */
+	public final Vec subLocal(Vec v) {
+		x -= v.x;
+		y -= v.y;
+		return this;
+	}
+
+	/** Multiply this vector by a number and return result - alters this vector. */
+	public final Vec mulLocal(float a) {
+		x *= a;
+		y *= a;
+		return this;
+	}
+
+	/** Return the length of this vector. */
+	public final float length() {
+		return MathUtils.sqrt(x * x + y * y);
+	}
+
+	/** Return the squared length of this vector. */
+	public final float lengthSquared() {
+		return (x*x + y*y);
+	}
+
+	/** Normalize this vector and return the length before normalization.  Alters this vector. */
+	public final float normalize() {
+		float length = length();
+		if (length < Settings.EPSILON) {
+			return 0f;
+		}
+
+		float invLength = 1.0f / length;
+		x *= invLength;
+		y *= invLength;
+		return length;
+	}
+
+	/** True if the vector represents a pair of valid, non-infinite floating point numbers. */
+	public final boolean isValid() {
+		return x != Float.NaN && x != Float.NEGATIVE_INFINITY
+		&& x != Float.POSITIVE_INFINITY && y != Float.NaN
+		&& y != Float.NEGATIVE_INFINITY && y != Float.POSITIVE_INFINITY;
+	}
+
+	/** Return a new vector that has positive components. */
+	public final Vec abs() {
+		return new Vec(MathUtils.abs(x), MathUtils.abs(y));
+	}
+
+	/* djm created */
+	public final void absLocal(){
+		x = MathUtils.abs(x);
+		y = MathUtils.abs(y);
+	}
+
+	@Override
+	/** Return a copy of this vector. */
+	public final Vec clone() {
+		return new Vec(x, y);
+	}
+
+	@Override
+	public final String toString() {
+		return "(" + x + "," + y + ")";
+	}
+
+	/*
+	 * Static
+	 */
+
+	public final static Vec abs(Vec a) {
+		return new Vec(MathUtils.abs(a.x), MathUtils.abs(a.y));
+	}
+
+	/* djm created */
+	public final static void absToOut(Vec a, Vec out){
+		out.x = MathUtils.abs( a.x);
+		out.y = MathUtils.abs( a.y);
+	}
+
+	public final static float dot(Vec a, Vec b) {
+		return a.x * b.x + a.y * b.y;
+	}
+
+	public final static float cross(Vec a, Vec b) {
+		return a.x * b.y - a.y * b.x;
+	}
+
+	public final static Vec cross(Vec a, float s) {
+		return new Vec(s * a.y, -s * a.x);
+	}
+
+	/* djm created */
+	public final static void crossToOut(Vec a, float s, Vec out){
+		float tempy = -s * a.x;
+		out.x = s * a.y;
+		out.y = tempy;
+	}
+
+	public final static Vec cross(float s, Vec a) {
+		return new Vec(-s * a.y, s * a.x);
+	}
+
+	/* djm created */
+	public final static void crossToOut(float s, Vec a, Vec out){
+		float tempY = s * a.x;
+		out.x = -s * a.y;
+		out.y = tempY;
+	}
+	
+	public final static void negateToOut(Vec a, Vec out){
+		out.x = -a.x;
+		out.y = -a.y;
+	}
+
+	public final static Vec min(Vec a, Vec b) {
+		return new Vec(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
+	}
+
+	public final static Vec max(Vec a, Vec b) {
+		return new Vec(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
+	}
+
+	/* djm created */
+	public final static void minToOut(Vec a, Vec b, Vec out) {
+		out.x = a.x < b.x ? a.x : b.x;
+		out.y = a.y < b.y ? a.y : b.y;
+	}
+
+	/* djm created */
+	public final static void maxToOut(Vec a, Vec b, Vec out) {
+		out.x = a.x > b.x ? a.x : b.x;
+		out.y = a.y > b.y ? a.y : b.y;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() { //automatically generated by Eclipse
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(x);
+		result = prime * result + Float.floatToIntBits(y);
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) { //automatically generated by Eclipse
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vec other = (Vec) obj;
+		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+			return false;
+		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+			return false;
+		return true;
+	}
+}
